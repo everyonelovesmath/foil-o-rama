@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOIL-O-RAMA</title>
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e17;
+    --card: #1a1826;
+    --border: #2e2b45;
+    --accent1: #ff6b6b;
+    --accent2: #ffd93d;
+    --accent3: #6bcb77;
+    --accent4: #4d96ff;
+    --text: #fffffe;
+    --muted: #a7a3c0;
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 48px;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(77,150,255,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(255,107,107,0.10) 0%, transparent 50%);
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .logo {
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(2.8rem, 8vw, 5rem);
+    letter-spacing: 2px;
+    line-height: 1;
+    background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 24px rgba(255,217,61,0.25));
+  }
+
+  .tagline {
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    width: 100%;
+    max-width: 640px;
+  }
+
+  /* Level selector */
+  .level-section { margin-bottom: 24px; }
+
+  .level-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .level-buttons {
+    display: flex;
+    gap: 10px;
+  }
+
+  .level-btn {
+    flex: 1;
+    padding: 12px 8px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+
+  .level-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+  .level-btn.active { border-color: var(--accent2); color: var(--accent2); background: rgba(255,217,61,0.08); }
+
+  .level-btn .sub {
+    display: block;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+    opacity: 0.7;
+  }
+
+  /* Go button */
+  .go-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+    border: none;
+    border-radius: 12px;
+    color: #0f0e17;
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: transform 0.15s, filter 0.15s;
+    margin-bottom: 28px;
+  }
+  .go-btn:hover { transform: scale(1.02); filter: brightness(1.1); }
+  .go-btn:active { transform: scale(0.98); }
+
+  /* Problem display */
+  .problem-area {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .problem-area.visible { display: block; }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+  .problem-display {
+    text-align: center;
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(2rem, 7vw, 3.2rem);
+    color: var(--text);
+    margin-bottom: 28px;
+    letter-spacing: 1px;
+    padding: 20px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .problem-display .times-sym { color: var(--muted); margin: 0 8px; }
+
+  /* FOIL boxes */
+  .foil-section {
+    margin-bottom: 24px;
+  }
+
+  .foil-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    text-align: center;
+  }
+
+  .foil-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .foil-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .foil-letter {
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.6rem;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .foil-item:nth-child(1) .foil-letter { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+  .foil-item:nth-child(2) .foil-letter { background: rgba(255,217,61,0.2); color: #ffd93d; }
+  .foil-item:nth-child(3) .foil-letter { background: rgba(107,203,119,0.2); color: #6bcb77; }
+  .foil-item:nth-child(4) .foil-letter { background: rgba(77,150,255,0.2); color: #4d96ff; }
+
+  .foil-item .foil-hint {
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-align: center;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .foil-input {
+    width: 100%;
+    padding: 10px 8px;
+    background: rgba(255,255,255,0.04);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    transition: border-color 0.18s;
+    outline: none;
+  }
+
+  .foil-input:focus { border-color: var(--accent4); }
+  .foil-input.correct { border-color: var(--accent3); background: rgba(107,203,119,0.08); }
+  .foil-input.wrong { border-color: var(--accent1); background: rgba(255,107,107,0.08); }
+
+  /* Final answer */
+  .answer-section { margin-bottom: 24px; }
+
+  .answer-label {
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .answer-hint {
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .answer-input {
+    width: 100%;
+    padding: 14px;
+    background: rgba(255,255,255,0.04);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.4rem;
+    text-align: center;
+    transition: border-color 0.18s;
+    outline: none;
+  }
+
+  .answer-input:focus { border-color: var(--accent4); }
+  .answer-input.correct { border-color: var(--accent3); background: rgba(107,203,119,0.08); }
+  .answer-input.wrong { border-color: var(--accent1); background: rgba(255,107,107,0.08); }
+
+  /* Check button */
+  .check-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--card);
+    border: 2px solid var(--accent4);
+    border-radius: 12px;
+    color: var(--accent4);
+    font-family: 'Boogaloo', cursive;
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .check-btn:hover { background: rgba(77,150,255,0.12); }
+
+  /* Feedback */
+  .feedback {
+    margin-top: 18px;
+    text-align: center;
+    min-height: 40px;
+  }
+
+  .feedback-msg {
+    font-size: 0.95rem;
+    color: var(--muted);
+    font-weight: 700;
+  }
+
+  /* FOIL-O-RAMA celebration */
+  .foilorama {
+    display: none;
+    font-family: 'Boogaloo', cursive;
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    letter-spacing: 3px;
+    animation: rainbow 0.6s linear infinite, pop 0.4s ease;
+    text-align: center;
+  }
+
+  .foilorama.visible { display: block; }
+
+  @keyframes rainbow {
+    0%   { color: #ff6b6b; }
+    25%  { color: #ffd93d; }
+    50%  { color: #6bcb77; }
+    75%  { color: #4d96ff; }
+    100% { color: #ff6b6b; }
+  }
+
+  @keyframes pop {
+    0%   { transform: scale(0.5); opacity: 0; }
+    60%  { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .confetti-row {
+    font-size: 1.6rem;
+    animation: spin 1s linear infinite;
+    display: none;
+  }
+  .confetti-row.visible { display: block; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+  /* New problem link */
+  .new-problem-btn {
+    margin-top: 16px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .new-problem-btn:hover { color: var(--text); }
+
+  /* Instructions tooltip */
+  .instructions {
+    max-width: 640px;
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 14px 18px;
+    background: rgba(77,150,255,0.07);
+    border: 1px solid rgba(77,150,255,0.2);
+    border-radius: 12px;
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .instructions strong { color: var(--accent4); }
+
+  @media (max-width: 400px) {
+    .foil-grid { grid-template-columns: repeat(2, 1fr); }
+    .foil-item { flex-direction: row; gap: 8px; }
+    .foil-item .foil-hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">FOIL-O-RAMA</div>
+  <div class="tagline">Binomial Multiplication Practice</div>
+</header>
+
+<div class="instructions">
+  <strong>How to enter answers:</strong> Use plain numbers and variables.
+  For example: <strong>x²</strong> → <code>x^2</code>, <strong>6x</strong> → <code>6x</code>, <strong>-10</strong> → <code>-10</code>.
+  For the final answer, combine like terms: e.g. <code>x^2+5x-6</code>
+</div>
+
+<div class="card">
+  <!-- Level selector -->
+  <div class="level-section">
+    <div class="level-label">Choose Your Level</div>
+    <div class="level-buttons">
+      <button class="level-btn active" data-level="1" onclick="setLevel(1)">
+        Level 1
+        <span class="sub">(x+a)(x+b)</span>
+      </button>
+      <button class="level-btn" data-level="2" onclick="setLevel(2)">
+        Level 2
+        <span class="sub">+ negatives</span>
+      </button>
+      <button class="level-btn" data-level="3" onclick="setLevel(3)">
+        Level 3
+        <span class="sub">+ coefficients</span>
+      </button>
+    </div>
+  </div>
+
+  <button class="go-btn" onclick="generateProblem()">🎲 GO!</button>
+
+  <!-- Problem area -->
+  <div class="problem-area" id="problemArea">
+
+    <div class="problem-display" id="problemDisplay"></div>
+
+    <!-- FOIL inputs -->
+    <div class="foil-section">
+      <div class="foil-label">Step 1 — FOIL It Out</div>
+      <div class="foil-grid">
+        <div class="foil-item">
+          <div class="foil-letter">F</div>
+          <div class="foil-hint">First × First</div>
+          <input class="foil-input" id="inp-f" placeholder="?" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="foil-item">
+          <div class="foil-letter">O</div>
+          <div class="foil-hint">Outer × Outer</div>
+          <input class="foil-input" id="inp-o" placeholder="?" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="foil-item">
+          <div class="foil-letter">I</div>
+          <div class="foil-hint">Inner × Inner</div>
+          <input class="foil-input" id="inp-i" placeholder="?" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="foil-item">
+          <div class="foil-letter">L</div>
+          <div class="foil-hint">Last × Last</div>
+          <input class="foil-input" id="inp-l" placeholder="?" autocomplete="off" spellcheck="false">
+        </div>
+      </div>
+    </div>
+
+    <!-- Final answer -->
+    <div class="answer-section">
+      <div class="foil-label">Step 2 — Combine Like Terms</div>
+      <div class="answer-hint">Write the final polynomial (e.g. x^2+5x-6)</div>
+      <input class="answer-input" id="inp-answer" placeholder="Final answer..." autocomplete="off" spellcheck="false">
+    </div>
+
+    <button class="check-btn" onclick="checkAnswers()">✓ Check My Answer</button>
+
+    <div class="feedback">
+      <div class="foilorama" id="foilorama">🎉 FOIL-O-RAMA! 🎉</div>
+      <div class="confetti-row" id="confetti">⭐</div>
+      <div class="feedback-msg" id="feedbackMsg"></div>
+    </div>
+
+    <button class="new-problem-btn" onclick="generateProblem()">↻ New Problem</button>
+  </div>
+</div>
+
+<script>
+  let currentLevel = 1;
+  let currentProblem = null;
+
+  const primes = [2, 3, 5, 7];
+
+  function setLevel(n) {
+    currentLevel = n;
+    document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-level="${n}"]`).classList.add('active');
+  }
+
+  function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function pickCoeff(level) {
+    if (level < 3) return 1;
+    // d or e: 1 or prime < 10
+    const opts = [1, 1, 1, ...primes]; // weight toward 1
+    return opts[randInt(0, opts.length - 1)];
+  }
+
+  function generateProblem() {
+    clearFeedback();
+    clearInputs();
+
+    let a, b, d = 1, e = 1;
+
+    if (currentLevel === 1) {
+      a = randInt(1, 20);
+      b = randInt(1, 20);
+    } else if (currentLevel === 2) {
+      a = randInt(-20, 20);
+      b = randInt(-20, 20);
+      // ensure at least one is interesting (not all positive every time)
+      if (a > 0 && b > 0 && Math.random() < 0.5) a = -randInt(1, 20);
+      if (a > 0 && b > 0 && Math.random() < 0.5) b = -randInt(1, 20);
+    } else {
+      a = randInt(-20, 20);
+      b = randInt(-20, 20);
+      d = pickCoeff(3);
+      e = pickCoeff(3);
+      // At level 3, make sure at least one coeff isn't 1 sometimes
+      if (d === 1 && e === 1) d = primes[randInt(0, primes.length - 1)];
+    }
+
+    // Avoid zero constants
+    if (a === 0) a = 1;
+    if (b === 0) b = 1;
+
+    currentProblem = { a, b, d, e };
+
+    // Display
+    const p1 = formatBinomial(d, a);
+    const p2 = formatBinomial(e, b);
+    document.getElementById('problemDisplay').innerHTML =
+      `<span>(${p1})</span><span>(${p2})</span>`;
+
+    document.getElementById('problemArea').classList.add('visible');
+    document.getElementById('inp-f').focus();
+  }
+
+  function formatBinomial(coeff, constant) {
+    let term1 = coeff === 1 ? 'x' : `${coeff}x`;
+    let term2 = constant >= 0 ? `+${constant}` : `${constant}`;
+    return term1 + term2;
+  }
+
+  // Normalize user input: strip spaces, lowercase, handle implicit coeff
+  // Returns canonical string for comparison
+  function normalize(str) {
+    return str.replace(/\s+/g, '').toLowerCase();
+  }
+
+  // Build all acceptable forms for a term value
+  // termVal: numeric value of the term
+  // type: 'x2' | 'x' | 'const'
+  function acceptableForms(termVal, type) {
+    const forms = new Set();
+
+    if (type === 'x2') {
+      // e.g. 6x^2
+      const abs = Math.abs(termVal);
+      const sign = termVal < 0 ? '-' : '';
+      if (abs === 1) {
+        forms.add(`${sign}x^2`);
+        forms.add(`${sign}x²`);
+        forms.add(`${sign === '-' ? '-' : ''}1x^2`);
+      } else {
+        forms.add(`${sign}${abs}x^2`);
+        forms.add(`${sign}${abs}x²`);
+      }
+    } else if (type === 'x') {
+      const abs = Math.abs(termVal);
+      const sign = termVal < 0 ? '-' : '';
+      if (abs === 1) {
+        forms.add(`${sign}x`);
+        forms.add(`${sign}1x`);
+      } else {
+        forms.add(`${sign}${abs}x`);
+      }
+    } else {
+      forms.add(`${termVal}`);
+      if (termVal > 0) forms.add(`+${termVal}`);
+    }
+
+    return forms;
+  }
+
+  function checkTerm(input, termVal, type) {
+    const n = normalize(input);
+    const accepted = acceptableForms(termVal, type);
+    for (const f of accepted) {
+      if (normalize(f) === n) return true;
+    }
+    return false;
+  }
+
+  // Parse a polynomial string from user input into {x2, x, c} coefficients
+  function parsePolynomial(str) {
+    let s = str.replace(/\s+/g, '').toLowerCase();
+    // replace x^2 or x² with X (placeholder)
+    s = s.replace(/x\^2/g, 'X').replace(/x²/g, 'X');
+
+    let x2 = 0, x = 0, c = 0;
+
+    // Extract x^2 terms
+    let rx2 = /([+-]?\d*)X/g;
+    let m;
+    while ((m = rx2.exec(s)) !== null) {
+      let coef = m[1];
+      if (coef === '' || coef === '+') coef = '1';
+      else if (coef === '-') coef = '-1';
+      x2 += parseInt(coef, 10);
+      s = s.slice(0, m.index) + s.slice(m.index + m[0].length);
+      rx2.lastIndex = 0; // reset after mutation
+    }
+
+    // Extract x terms (not x^2)
+    let rx = /([+-]?\d*)x/g;
+    while ((m = rx.exec(s)) !== null) {
+      let coef = m[1];
+      if (coef === '' || coef === '+') coef = '1';
+      else if (coef === '-') coef = '-1';
+      x += parseInt(coef, 10);
+      s = s.slice(0, m.index) + s.slice(m.index + m[0].length);
+      rx.lastIndex = 0;
+    }
+
+    // Extract constants
+    let rc = /([+-]?\d+)/g;
+    while ((m = rc.exec(s)) !== null) {
+      c += parseInt(m[1], 10);
+    }
+
+    return { x2, x, c };
+  }
+
+  function checkAnswers() {
+    const { a, b, d, e } = currentProblem;
+
+    // FOIL values
+    const F = d * e;        // coeff of x^2
+    const O = d * b;        // outer: d*b * x
+    const I = e * a;        // inner: e*a * x
+    const L = a * b;        // last: const
+
+    // Final answer coefficients
+    const finalX2 = F;
+    const finalX = O + I;
+    const finalC = L;
+
+    const fVal = document.getElementById('inp-f').value.trim();
+    const oVal = document.getElementById('inp-o').value.trim();
+    const iVal = document.getElementById('inp-i').value.trim();
+    const lVal = document.getElementById('inp-l').value.trim();
+    const ansVal = document.getElementById('inp-answer').value.trim();
+
+    const fOk = checkTerm(fVal, F, 'x2');
+    const oOk = checkTerm(oVal, O, 'x');
+    const iOk = checkTerm(iVal, I, 'x');
+    const lOk = checkTerm(lVal, L, 'const');
+
+    setInputState('inp-f', fOk);
+    setInputState('inp-o', oOk);
+    setInputState('inp-i', iOk);
+    setInputState('inp-l', lOk);
+
+    // Check final answer by parsing polynomial
+    let ansOk = false;
+    if (ansVal) {
+      const parsed = parsePolynomial(ansVal);
+      ansOk = parsed.x2 === finalX2 && parsed.x === finalX && parsed.c === finalC;
+    }
+    setInputState('inp-answer', ansOk);
+
+    const allOk = fOk && oOk && iOk && lOk && ansOk;
+    const foilOk = fOk && oOk && iOk && lOk;
+
+    if (allOk) {
+      showFoilorama();
+    } else {
+      let msgs = [];
+      if (!fOk) msgs.push(`F should be <strong>${termString(F, 'x2')}</strong>`);
+      if (!oOk) msgs.push(`O should be <strong>${termString(O, 'x')}</strong>`);
+      if (!iOk) msgs.push(`I should be <strong>${termString(I, 'x')}</strong>`);
+      if (!lOk) msgs.push(`L should be <strong>${termString(L, 'const')}</strong>`);
+      if (foilOk && !ansOk) msgs.push(`Combine like terms: (${termString(finalX2,'x2')}) + (${termString(O,'x')}) + (${termString(I,'x')}) + (${termString(L,'const')})`);
+
+      document.getElementById('feedbackMsg').innerHTML = msgs.join(' &nbsp;·&nbsp; ');
+    }
+  }
+
+  function termString(val, type) {
+    if (type === 'x2') {
+      if (val === 1) return 'x^2';
+      if (val === -1) return '-x^2';
+      return `${val}x^2`;
+    } else if (type === 'x') {
+      if (val === 1) return 'x';
+      if (val === -1) return '-x';
+      return `${val}x`;
+    } else {
+      return `${val}`;
+    }
+  }
+
+  function setInputState(id, correct) {
+    const el = document.getElementById(id);
+    el.classList.remove('correct', 'wrong');
+    if (el.value.trim()) {
+      el.classList.add(correct ? 'correct' : 'wrong');
+    }
+  }
+
+  function showFoilorama() {
+    const fr = document.getElementById('foilorama');
+    const conf = document.getElementById('confetti');
+    fr.classList.remove('visible');
+    conf.classList.remove('visible');
+    void fr.offsetWidth; // reflow for re-animation
+    fr.classList.add('visible');
+    conf.classList.add('visible');
+    document.getElementById('feedbackMsg').textContent = '';
+  }
+
+  function clearFeedback() {
+    document.getElementById('foilorama').classList.remove('visible');
+    document.getElementById('confetti').classList.remove('visible');
+    document.getElementById('feedbackMsg').textContent = '';
+  }
+
+  function clearInputs() {
+    ['inp-f','inp-o','inp-i','inp-l','inp-answer'].forEach(id => {
+      const el = document.getElementById(id);
+      el.value = '';
+      el.classList.remove('correct','wrong');
+    });
+  }
+
+  // Allow Enter key to check
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && currentProblem) checkAnswers();
+  });
+</script>
+</body>
+</html>
